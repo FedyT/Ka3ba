@@ -1,0 +1,4927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#151515">
+
+<title>Beer Tracker</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    overflow-x: hidden;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #252525 0%,
+            #151515 48%
+        );
+
+    color: #f5f5f5;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    display: flex;
+    justify-content: center;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+
+    padding:
+        max(22px, env(safe-area-inset-top))
+        16px
+        max(28px, env(safe-area-inset-bottom));
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 22px;
+}
+
+.logo {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.date {
+    color: #8d8d8d;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   SESSION
+========================================================= */
+
+.session-button {
+    width: 100%;
+    min-height: 44px;
+
+    border: 1px solid #333;
+    border-radius: 14px;
+
+    background: #1d1d1d;
+    color: #bbb;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform .12s ease,
+        background .15s ease,
+        border-color .15s ease;
+}
+
+.session-button:active {
+    transform: scale(.98);
+}
+
+.session-button.active {
+    background: #292319;
+    border-color: rgba(245,182,66,.45);
+    color: #f5b642;
+}
+
+
+/* =========================================================
+   COUNTER
+========================================================= */
+
+.counter-section {
+    text-align: center;
+
+    margin: 28px 0 24px;
+}
+
+.label {
+    color: #8d8d8d;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+    margin-bottom: 8px;
+}
+
+.counter {
+    font-size:
+        clamp(88px, 25vw, 135px);
+
+    line-height: .88;
+
+    font-weight: 900;
+    letter-spacing: -8px;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.beer-label {
+    margin-top: 13px;
+
+    color: #ddd;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   SELECTOR
+========================================================= */
+
+.selection-title {
+    text-align: center;
+
+    color: #8d8d8d;
+
+    font-size: 12px;
+
+    margin-bottom: 5px;
+}
+
+.selection-hint {
+    text-align: center;
+
+    color: #555;
+
+    font-size: 10px;
+
+    margin-bottom: 11px;
+}
+
+.beer-options {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 7px;
+
+    margin-bottom: 12px;
+}
+
+.beer-option {
+    min-width: 0;
+
+    height: 51px;
+
+    padding: 0 3px;
+
+    border:
+        2px solid
+        transparent;
+
+    border-radius: 13px;
+
+    background: #202020;
+    color: #f5f5f5;
+
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        transform .1s ease;
+}
+
+.beer-option:active {
+    transform: scale(.96);
+}
+
+.beer-option.selected {
+    border-color: #f5b642;
+
+    background: #292319;
+
+    color: #f5b642;
+}
+
+.option-price {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #8d8d8d;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ADD BUTTON
+========================================================= */
+
+.add-button {
+    width: 100%;
+    min-height: 66px;
+
+    border: none;
+    border-radius: 19px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffc85b,
+            #f5b642
+        );
+
+    color: #171717;
+
+    font-size: 18px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 6px 0 #c98716,
+        0 12px 25px rgba(0,0,0,.22);
+
+    transition:
+        transform .12s ease,
+        box-shadow .12s ease;
+}
+
+.add-button:active {
+    transform: translateY(6px);
+
+    box-shadow:
+        0 1px 0 #c98716;
+}
+
+.add-price {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    opacity: .6;
+}
+
+
+/* =========================================================
+   UNDO
+========================================================= */
+
+.undo {
+    display: block;
+
+    margin: 14px auto 0;
+
+    padding: 7px 16px;
+
+    border: none;
+
+    background: none;
+
+    color: #8d8d8d;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.undo:disabled {
+    opacity: .25;
+}
+
+
+/* =========================================================
+   BOTTLES
+========================================================= */
+
+.bottles-section {
+    width: 100%;
+
+    margin-top: 28px;
+
+    overflow: hidden;
+}
+
+.bottles-title {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+}
+
+.bottles-title span:first-child {
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.bottles-title span:last-child {
+    color: #8d8d8d;
+    font-size: 11px;
+}
+
+.bottles {
+    width: 100%;
+    min-height: 130px;
+
+    padding: 20px 14px;
+
+    border-radius: 19px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #242424,
+            #1c1c1c
+        );
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: flex-end;
+    align-content: flex-start;
+
+    gap: 12px;
+
+    overflow: hidden;
+}
+
+.empty {
+    width: 100%;
+
+    padding: 27px 0;
+
+    text-align: center;
+
+    color: #555;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   BOTTLE
+========================================================= */
+
+.bottle {
+    --bottle-main: #4c2b16;
+    --bottle-light: #7b4a26;
+
+    position: relative;
+
+    width: 39px;
+    height: 86px;
+
+    flex:
+        0 0 39px;
+
+    cursor: pointer;
+
+    transform-origin:
+        50% 100%;
+
+    filter:
+        drop-shadow(
+            0 4px 4px
+            rgba(0,0,0,.4)
+        );
+}
+
+.bottle-body {
+    position: absolute;
+
+    left: 2px;
+    right: 2px;
+    bottom: 0;
+
+    height: 62px;
+
+    border-radius:
+        7px 7px 6px 6px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.35),
+            transparent 25%,
+            rgba(255,255,255,.16) 45%,
+            transparent 60%,
+            rgba(0,0,0,.28)
+        ),
+        linear-gradient(
+            180deg,
+            var(--bottle-light),
+            var(--bottle-main)
+        );
+
+    border:
+        1px solid
+        rgba(0,0,0,.5);
+}
+
+.bottle-body::before {
+    content: "";
+
+    position: absolute;
+
+    left: 2px;
+    right: 2px;
+    top: -13px;
+
+    height: 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.3),
+            rgba(255,255,255,.13),
+            rgba(0,0,0,.3)
+        );
+
+    border-radius:
+        11px 11px 3px 3px;
+}
+
+.bottle-neck {
+    position: absolute;
+
+    width: 18px;
+    height: 29px;
+
+    left: 50%;
+    top: 0;
+
+    transform:
+        translateX(-50%);
+
+    border-radius:
+        4px 4px 2px 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.35),
+            rgba(255,255,255,.18),
+            rgba(0,0,0,.3)
+        ),
+        var(--bottle-main);
+
+    z-index: 2;
+}
+
+.bottle-lip {
+    position: absolute;
+
+    width: 22px;
+    height: 6px;
+
+    left: 50%;
+    top: -2px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 3px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #c5c5c5,
+            #666
+        );
+
+    border:
+        1px solid #444;
+
+    z-index: 4;
+}
+
+.bottle-cap {
+    position: absolute;
+
+    width: 18px;
+    height: 5px;
+
+    left: 50%;
+    top: -5px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 2px;
+
+    z-index: 5;
+
+    box-shadow:
+        inset 0 1px
+        rgba(255,255,255,.4);
+}
+
+.bottle-label {
+    position: absolute;
+
+    left: 5px;
+    right: 5px;
+
+    top: 36px;
+
+    height: 25px;
+
+    z-index: 5;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 2px;
+
+    color: white;
+
+    font-size: 7px;
+    font-weight: 900;
+
+    letter-spacing: .2px;
+
+    text-transform: uppercase;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   BOTTLE COLORS
+========================================================= */
+
+.bottle.celtia {
+    --bottle-main: #381d0e;
+    --bottle-light: #6d3d1c;
+}
+
+.bottle.celtia .bottle-label {
+    background:
+        linear-gradient(
+            180deg,
+            #e93636,
+            #a90e0e
+        );
+}
+
+.bottle.celtia .bottle-cap {
+    background:
+        linear-gradient(
+            180deg,
+            #f45151,
+            #9f1111
+        );
+}
+
+
+.bottle.becks {
+    --bottle-main: #263d2a;
+    --bottle-light: #4d7754;
+}
+
+.bottle.becks .bottle-label {
+    background:
+        linear-gradient(
+            180deg,
+            #1ca652,
+            #08652d
+        );
+}
+
+.bottle.becks .bottle-cap {
+    background:
+        linear-gradient(
+            180deg,
+            #35bd68,
+            #087136
+        );
+}
+
+
+.bottle.amstel {
+    --bottle-main: #46320d;
+    --bottle-light: #85651e;
+}
+
+.bottle.amstel .bottle-label {
+    background:
+        linear-gradient(
+            180deg,
+            #f2c341,
+            #b77b00
+        );
+
+    color: #3c2700;
+}
+
+.bottle.amstel .bottle-cap {
+    background:
+        linear-gradient(
+            180deg,
+            #ffe16b,
+            #b67c00
+        );
+}
+
+
+.bottle.other {
+    --bottle-main: #414141;
+    --bottle-light: #777777;
+}
+
+.bottle.other .bottle-label {
+    background:
+        linear-gradient(
+            180deg,
+            #fff,
+            #bdbdbd
+        );
+
+    color: #555;
+}
+
+.bottle.other .bottle-cap {
+    background:
+        linear-gradient(
+            180deg,
+            #fff,
+            #9b9b9b
+        );
+}
+
+
+/* =========================================================
+   BOTTLE ANIMATION
+========================================================= */
+
+.bottle.new {
+    animation:
+        bottleDrop
+        .75s
+        cubic-bezier(.2,.85,.25,1);
+}
+
+@keyframes bottleDrop {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(-120px)
+            translateX(25px)
+            rotate(-30deg)
+            scale(.7);
+    }
+
+    35% {
+        opacity: 1;
+    }
+
+    58% {
+        transform:
+            translateY(10px)
+            translateX(-4px)
+            rotate(8deg)
+            scale(1.03);
+    }
+
+    74% {
+        transform:
+            translateY(-4px)
+            rotate(-4deg)
+            scale(.98);
+    }
+
+    88% {
+        transform:
+            translateY(2px)
+            rotate(2deg);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            translateX(0)
+            rotate(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   TAB
+========================================================= */
+
+.tab {
+    width: 100%;
+
+    margin-top: 10px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #222,
+            #1c1c1c
+        );
+
+    border:
+        1px solid
+        rgba(255,255,255,.04);
+
+    overflow: hidden;
+}
+
+.tab-header {
+    min-height: 58px;
+
+    padding: 0 17px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    cursor: pointer;
+}
+
+.tab-title {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.tab-chevron {
+    display: inline-block;
+
+    margin-left: 5px;
+
+    color: #666;
+
+    font-size: 9px;
+
+    transition:
+        transform .2s ease;
+}
+
+.tab.open .tab-chevron {
+    transform:
+        rotate(180deg);
+}
+
+.tab-total {
+    color: #f5b642;
+
+    font-size: 20px;
+    font-weight: 900;
+
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.tab-details {
+    display: none;
+
+    padding:
+        0 17px 17px;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,.05);
+}
+
+.tab.open .tab-details {
+    display: block;
+}
+
+.tab-row {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding-top: 10px;
+
+    color: #8d8d8d;
+
+    font-size: 11px;
+}
+
+.tab-row strong {
+    color: #ddd;
+}
+
+.tab-row.total {
+    margin-top: 7px;
+
+    padding-top: 13px;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,.06);
+}
+
+.tab-row.total strong {
+    color: #f5b642;
+}
+
+.price-breakdown {
+    margin-top: 9px;
+}
+
+.price-breakdown-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 6px 0;
+
+    color: #999;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats-section {
+    margin-top: 28px;
+}
+
+.section-heading {
+    margin-bottom: 10px;
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+}
+
+.stat-card {
+    min-width: 0;
+
+    padding: 14px;
+
+    border-radius: 16px;
+
+    background: #202020;
+}
+
+.stat-value {
+    font-size: 20px;
+
+    font-weight: 900;
+
+    margin-bottom: 3px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.stat-label {
+    color: #8d8d8d;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   BREAKDOWN
+========================================================= */
+
+.breakdown {
+    width: 100%;
+}
+
+.breakdown-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+
+    padding: 9px 0;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.04);
+}
+
+.breakdown-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+}
+
+.breakdown-name {
+    min-width: 0;
+
+    flex: 1;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.breakdown-count {
+    flex-shrink: 0;
+
+    color: #8d8d8d;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   ACCORDIONS
+========================================================= */
+
+.accordion {
+    width: 100%;
+
+    margin-top: 27px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #222,
+            #1c1c1c
+        );
+
+    border:
+        1px solid
+        rgba(255,255,255,.04);
+
+    overflow: hidden;
+}
+
+.accordion-header {
+    width: 100%;
+
+    min-height: 56px;
+
+    padding: 0 17px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #f5f5f5;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+.accordion-title {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+.accordion-title-main {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.accordion-title-sub {
+    color: #8d8d8d;
+
+    font-size: 9px;
+}
+
+.accordion-chevron {
+    color: #666;
+
+    font-size: 10px;
+
+    transition:
+        transform .2s ease;
+}
+
+.accordion.open
+.accordion-chevron {
+    transform:
+        rotate(180deg);
+}
+
+.accordion-content {
+    display: none;
+
+    padding:
+        0 17px 17px;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,.05);
+}
+
+.accordion.open
+.accordion-content {
+    display: block;
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.history-accordion {
+    margin-top: 9px;
+}
+
+.history-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.history-item {
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding:
+        12px 0;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.04);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-date {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.history-meta {
+    margin-top: 2px;
+
+    color: #8d8d8d;
+
+    font-size: 9px;
+}
+
+.history-total {
+    flex-shrink: 0;
+
+    color: #f5b642;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.no-history {
+    padding: 13px 0;
+
+    color: #555;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal-backdrop {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(0,0,0,.74);
+
+    backdrop-filter:
+        blur(5px);
+
+    -webkit-backdrop-filter:
+        blur(5px);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity .2s ease;
+}
+
+.modal-backdrop.visible {
+    opacity: 1;
+
+    pointer-events: auto;
+}
+
+.modal {
+    width: 100%;
+    max-width: 360px;
+
+    padding: 22px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #292929,
+            #1d1d1d
+        );
+
+    box-shadow:
+        0 25px 80px
+        rgba(0,0,0,.55);
+
+    transform:
+        translateY(15px)
+        scale(.96);
+
+    transition:
+        transform .2s ease;
+}
+
+.modal-backdrop.visible
+.modal {
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.modal-title {
+    font-size: 19px;
+    font-weight: 800;
+
+    margin-bottom: 4px;
+}
+
+.modal-description {
+    color: #8d8d8d;
+
+    font-size: 11px;
+
+    margin-bottom: 17px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-label {
+    display: block;
+
+    margin:
+        13px 0 6px;
+
+    color: #8d8d8d;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .8px;
+}
+
+.text-input-wrap,
+.price-input-wrap {
+    display: flex;
+
+    align-items: center;
+
+    width: 100%;
+
+    background: #151515;
+
+    border:
+        2px solid
+        #333;
+
+    border-radius: 14px;
+
+    padding: 0 13px;
+}
+
+.text-input,
+.price-input {
+    width: 100%;
+
+    height: 52px;
+
+    border: none;
+    outline: none;
+
+    background: none;
+
+    color: #f5f5f5;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.price-input {
+    font-variant-numeric:
+        tabular-nums;
+}
+
+.price-currency {
+    flex-shrink: 0;
+
+    color: #8d8d8d;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   MODAL BUTTONS
+========================================================= */
+
+.modal-actions {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+
+    margin-top: 15px;
+}
+
+.modal-button {
+    height: 49px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.cancel-button {
+    background: #303030;
+
+    color: #aaa;
+}
+
+.save-button {
+    background: #f5b642;
+
+    color: #171717;
+}
+
+.delete-button {
+    width: 100%;
+
+    height: 42px;
+
+    margin-top: 9px;
+
+    border:
+        1px solid
+        rgba(224,82,82,.25);
+
+    border-radius: 12px;
+
+    background:
+        rgba(224,82,82,.08);
+
+    color: #e05252;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.summary-big {
+    text-align: center;
+
+    padding:
+        9px 0 19px;
+}
+
+.summary-number {
+    font-size: 60px;
+
+    line-height: .9;
+
+    font-weight: 900;
+
+    color: #f5b642;
+}
+
+.summary-label {
+    margin-top: 7px;
+
+    color: #8d8d8d;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 350px) {
+
+    .app {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .beer-options {
+        gap: 5px;
+    }
+
+    .beer-option {
+        font-size: 10px;
+        border-radius: 11px;
+    }
+
+    .option-price {
+        font-size: 7px;
+    }
+
+    .bottles {
+        padding-left: 11px;
+        padding-right: 11px;
+
+        gap: 9px;
+    }
+
+    .bottle {
+        width: 36px;
+        flex-basis: 36px;
+    }
+
+}
+
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
+@media (min-width: 600px) {
+
+    body {
+        padding: 25px 0;
+    }
+
+    .app {
+        min-height:
+            calc(100vh - 50px);
+
+        border-radius: 28px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #191919,
+                #151515
+            );
+
+        padding: 28px;
+
+        box-shadow:
+            0 20px 60px
+            rgba(0,0,0,.4);
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration:
+            .01ms !important;
+
+        transition-duration:
+            .01ms !important;
+
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<header>
+
+    <div class="logo">
+        🍺 Beer Tracker
+    </div>
+
+    <div
+        class="date"
+        id="date">
+    </div>
+
+</header>
+
+
+<!-- =======================================================
+     SESSION
+======================================================= -->
+
+<button
+    class="session-button"
+    id="sessionButton">
+
+    Start Session
+
+</button>
+
+
+<!-- =======================================================
+     COUNTER
+======================================================= -->
+
+<section class="counter-section">
+
+    <div class="label">
+        Current Session
+    </div>
+
+    <div
+        class="counter"
+        id="counter">
+
+        0
+
+    </div>
+
+    <div
+        class="beer-label"
+        id="beerLabel">
+
+        No items yet
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     SELECTOR
+======================================================= -->
+
+<div class="selection-title">
+    What are you adding?
+</div>
+
+<div class="selection-hint">
+    Tap to select · Hold to edit
+</div>
+
+
+<div class="beer-options">
+
+    <button
+        class="beer-option selected"
+        data-beer="Celtia">
+
+        Celtia
+
+        <span
+            class="option-price"
+            data-price-for="Celtia">
+        </span>
+
+    </button>
+
+
+    <button
+        class="beer-option"
+        data-beer="Becks">
+
+        Becks
+
+        <span
+            class="option-price"
+            data-price-for="Becks">
+        </span>
+
+    </button>
+
+
+    <button
+        class="beer-option"
+        data-beer="Amstel">
+
+        Amstel
+
+        <span
+            class="option-price"
+            data-price-for="Amstel">
+        </span>
+
+    </button>
+
+
+    <button
+        class="beer-option"
+        data-beer="Other">
+
+        <span id="otherButtonName">
+            Other
+        </span>
+
+        <span
+            class="option-price"
+            data-price-for="Other">
+        </span>
+
+    </button>
+
+</div>
+
+
+<!-- =======================================================
+     ADD
+======================================================= -->
+
+<button
+    class="add-button"
+    id="addButton">
+
+    <span id="addText">
+        + Add Celtia
+    </span>
+
+    <span
+        class="add-price"
+        id="addPrice">
+    </span>
+
+</button>
+
+
+<button
+    class="undo"
+    id="undoButton"
+    disabled>
+
+    Undo
+
+</button>
+
+
+<!-- =======================================================
+     BOTTLES
+======================================================= -->
+
+<section class="bottles-section">
+
+    <div class="bottles-title">
+
+        <span>
+            Today's items
+        </span>
+
+        <span id="bottleCount">
+            0 items
+        </span>
+
+    </div>
+
+
+    <div
+        class="bottles"
+        id="bottles">
+
+        <div class="empty">
+            Your items will appear here
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TAB
+    ====================================================== -->
+
+    <div
+        class="tab"
+        id="tab">
+
+        <div
+            class="tab-header"
+            id="tabHeader">
+
+            <div>
+
+                <span class="tab-title">
+                    Today's tab
+                </span>
+
+                <span class="tab-chevron">
+                    ▼
+                </span>
+
+            </div>
+
+            <div
+                class="tab-total"
+                id="tabTotal">
+
+                0.000 TND
+
+            </div>
+
+        </div>
+
+
+        <div class="tab-details">
+
+            <div class="tab-row">
+
+                <span>
+                    Items
+                </span>
+
+                <strong id="tabBeerCount">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="tab-row">
+
+                <span>
+                    Priced items
+                </span>
+
+                <strong id="tabPricedCount">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div
+                class="price-breakdown"
+                id="priceBreakdown">
+            </div>
+
+
+            <div class="tab-row total">
+
+                <span>
+                    Total
+                </span>
+
+                <strong id="tabTotalBottom">
+                    0.000 TND
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     SESSION STATS
+======================================================= -->
+
+<section class="stats-section">
+
+    <div class="section-heading">
+        Current Session
+    </div>
+
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div
+                class="stat-value"
+                id="sessionDuration">
+
+                —
+
+            </div>
+
+            <div class="stat-label">
+                Session length
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div
+                class="stat-value"
+                id="averageTime">
+
+                —
+
+            </div>
+
+            <div class="stat-label">
+                Avg. time between items
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="section-heading"
+        style="margin-top:22px;">
+
+        Breakdown
+
+    </div>
+
+
+    <div
+        class="breakdown"
+        id="breakdown">
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     PERSONAL RECORDS ACCORDION
+======================================================= -->
+
+<section
+    class="accordion"
+    id="recordsAccordion">
+
+
+    <button
+        class="accordion-header"
+        id="recordsHeader">
+
+
+        <div class="accordion-title">
+
+            <span class="accordion-title-main">
+                Personal Records
+            </span>
+
+            <span class="accordion-title-sub">
+                Tap to view your best
+            </span>
+
+        </div>
+
+
+        <span class="accordion-chevron">
+            ▼
+        </span>
+
+
+    </button>
+
+
+    <div class="accordion-content">
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <div
+                    class="stat-value"
+                    id="recordBeers">
+
+                    0
+
+                </div>
+
+                <div class="stat-label">
+                    Most items in one session
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div
+                    class="stat-value"
+                    id="recordMoney">
+
+                    0.000
+
+                </div>
+
+                <div class="stat-label">
+                    Most expensive session · TND
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div
+                    class="stat-value"
+                    id="recordStreak">
+
+                    0
+
+                </div>
+
+                <div class="stat-label">
+                    Longest streak
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div
+                    class="stat-value"
+                    id="recordTotal">
+
+                    0
+
+                </div>
+
+                <div class="stat-label">
+                    Total items
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     HISTORY ACCORDION
+======================================================= -->
+
+<section
+    class="accordion history-accordion"
+    id="historyAccordion">
+
+
+    <button
+        class="accordion-header"
+        id="historyHeader">
+
+
+        <div class="accordion-title">
+
+            <span class="accordion-title-main">
+                History
+            </span>
+
+            <span class="accordion-title-sub">
+                View your previous sessions
+            </span>
+
+        </div>
+
+
+        <span class="accordion-chevron">
+            ▼
+        </span>
+
+
+    </button>
+
+
+    <div class="accordion-content">
+
+        <div
+            class="history-list"
+            id="historyList">
+
+            <div class="no-history">
+                Your completed sessions will appear here.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+<!-- =======================================================
+     EDIT ITEM MODAL
+======================================================= -->
+
+<div
+    class="modal-backdrop"
+    id="editModal">
+
+
+    <div class="modal">
+
+        <div
+            class="modal-title"
+            id="editModalTitle">
+
+            Edit item
+
+        </div>
+
+
+        <div
+            class="modal-description"
+            id="editModalDescription">
+
+            Set the default information for this item.
+
+        </div>
+
+
+        <div
+            id="otherNameField"
+            style="display:none;">
+
+            <label class="form-label">
+                Name
+            </label>
+
+            <div class="text-input-wrap">
+
+                <input
+                    type="text"
+                    id="otherNameInput"
+                    class="text-input"
+                    maxlength="24"
+                    placeholder="e.g. Water"
+                >
+
+            </div>
+
+        </div>
+
+
+        <label class="form-label">
+            Price
+        </label>
+
+
+        <div class="price-input-wrap">
+
+            <input
+                type="number"
+                id="priceInput"
+                class="price-input"
+                min="0"
+                step="0.001"
+                inputmode="decimal"
+                placeholder="0.000"
+            >
+
+            <span class="price-currency">
+                TND
+            </span>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="modal-button cancel-button"
+                id="editCancel">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                class="modal-button save-button"
+                id="editSave">
+
+                Save
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     ITEM DETAILS MODAL
+======================================================= -->
+
+<div
+    class="modal-backdrop"
+    id="itemModal">
+
+
+    <div class="modal">
+
+        <div
+            class="modal-title"
+            id="itemModalTitle">
+
+            Celtia
+
+        </div>
+
+
+        <div
+            class="modal-description"
+            id="itemModalDescription">
+        </div>
+
+
+        <div class="tab-row">
+
+            <span>
+                Price
+            </span>
+
+            <strong id="itemModalPrice">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="tab-row">
+
+            <span>
+                Added
+            </span>
+
+            <strong id="itemModalTime">
+                —
+            </strong>
+
+        </div>
+
+
+        <button
+            class="delete-button"
+            id="deleteItem">
+
+            Remove this item
+
+        </button>
+
+
+        <button
+            class="modal-button cancel-button"
+            id="itemClose"
+            style="
+                width:100%;
+                margin-top:9px;
+            ">
+
+            Close
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     SESSION SUMMARY MODAL
+======================================================= -->
+
+<div
+    class="modal-backdrop"
+    id="summaryModal">
+
+
+    <div class="modal">
+
+        <div class="modal-title">
+            Session Summary
+        </div>
+
+
+        <div class="summary-big">
+
+            <div
+                class="summary-number"
+                id="summaryCount">
+
+                0
+
+            </div>
+
+            <div class="summary-label">
+                items in this session
+            </div>
+
+        </div>
+
+
+        <div class="tab-row">
+
+            <span>
+                Duration
+            </span>
+
+            <strong id="summaryDuration">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="tab-row">
+
+            <span>
+                Tab
+            </span>
+
+            <strong id="summaryTotal">
+                0.000 TND
+            </strong>
+
+        </div>
+
+
+        <div class="tab-row">
+
+            <span>
+                Average spacing
+            </span>
+
+            <strong id="summaryAverage">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="modal-button cancel-button"
+                id="summaryCancel">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                class="modal-button save-button"
+                id="summaryEnd">
+
+                End Session
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const counter =
+    document.getElementById("counter");
+
+const beerLabel =
+    document.getElementById("beerLabel");
+
+const addButton =
+    document.getElementById("addButton");
+
+const addText =
+    document.getElementById("addText");
+
+const addPrice =
+    document.getElementById("addPrice");
+
+const undoButton =
+    document.getElementById("undoButton");
+
+const bottlesContainer =
+    document.getElementById("bottles");
+
+const bottleCount =
+    document.getElementById("bottleCount");
+
+const dateElement =
+    document.getElementById("date");
+
+const beerOptions =
+    document.querySelectorAll(".beer-option");
+
+const optionPrices =
+    document.querySelectorAll(".option-price");
+
+const sessionButton =
+    document.getElementById("sessionButton");
+
+const otherButtonName =
+    document.getElementById("otherButtonName");
+
+
+/* TAB */
+
+const tab =
+    document.getElementById("tab");
+
+const tabHeader =
+    document.getElementById("tabHeader");
+
+const tabTotal =
+    document.getElementById("tabTotal");
+
+const tabTotalBottom =
+    document.getElementById(
+        "tabTotalBottom"
+    );
+
+const tabBeerCount =
+    document.getElementById(
+        "tabBeerCount"
+    );
+
+const tabPricedCount =
+    document.getElementById(
+        "tabPricedCount"
+    );
+
+const priceBreakdown =
+    document.getElementById(
+        "priceBreakdown"
+    );
+
+
+/* STATS */
+
+const breakdown =
+    document.getElementById(
+        "breakdown"
+    );
+
+const sessionDuration =
+    document.getElementById(
+        "sessionDuration"
+    );
+
+const averageTime =
+    document.getElementById(
+        "averageTime"
+    );
+
+
+/* RECORDS */
+
+const recordBeers =
+    document.getElementById(
+        "recordBeers"
+    );
+
+const recordMoney =
+    document.getElementById(
+        "recordMoney"
+    );
+
+const recordStreak =
+    document.getElementById(
+        "recordStreak"
+    );
+
+const recordTotal =
+    document.getElementById(
+        "recordTotal"
+    );
+
+
+/* HISTORY */
+
+const historyAccordion =
+    document.getElementById(
+        "historyAccordion"
+    );
+
+const historyHeader =
+    document.getElementById(
+        "historyHeader"
+    );
+
+const historyList =
+    document.getElementById(
+        "historyList"
+    );
+
+
+/* RECORD ACCORDION */
+
+const recordsAccordion =
+    document.getElementById(
+        "recordsAccordion"
+    );
+
+const recordsHeader =
+    document.getElementById(
+        "recordsHeader"
+    );
+
+
+/* EDIT MODAL */
+
+const editModal =
+    document.getElementById(
+        "editModal"
+    );
+
+const editModalTitle =
+    document.getElementById(
+        "editModalTitle"
+    );
+
+const editModalDescription =
+    document.getElementById(
+        "editModalDescription"
+    );
+
+const otherNameField =
+    document.getElementById(
+        "otherNameField"
+    );
+
+const otherNameInput =
+    document.getElementById(
+        "otherNameInput"
+    );
+
+const priceInput =
+    document.getElementById(
+        "priceInput"
+    );
+
+const editSave =
+    document.getElementById(
+        "editSave"
+    );
+
+const editCancel =
+    document.getElementById(
+        "editCancel"
+    );
+
+
+/* ITEM MODAL */
+
+const itemModal =
+    document.getElementById(
+        "itemModal"
+    );
+
+const itemModalTitle =
+    document.getElementById(
+        "itemModalTitle"
+    );
+
+const itemModalDescription =
+    document.getElementById(
+        "itemModalDescription"
+    );
+
+const itemModalPrice =
+    document.getElementById(
+        "itemModalPrice"
+    );
+
+const itemModalTime =
+    document.getElementById(
+        "itemModalTime"
+    );
+
+const deleteItem =
+    document.getElementById(
+        "deleteItem"
+    );
+
+const itemClose =
+    document.getElementById(
+        "itemClose"
+    );
+
+
+/* SUMMARY */
+
+const summaryModal =
+    document.getElementById(
+        "summaryModal"
+    );
+
+const summaryCount =
+    document.getElementById(
+        "summaryCount"
+    );
+
+const summaryDuration =
+    document.getElementById(
+        "summaryDuration"
+    );
+
+const summaryTotal =
+    document.getElementById(
+        "summaryTotal"
+    );
+
+const summaryAverage =
+    document.getElementById(
+        "summaryAverage"
+    );
+
+const summaryCancel =
+    document.getElementById(
+        "summaryCancel"
+    );
+
+const summaryEnd =
+    document.getElementById(
+        "summaryEnd"
+    );
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let beerHistory =
+    JSON.parse(
+        localStorage.getItem(
+            "beerHistory"
+        )
+    ) || [];
+
+
+let beerPrices =
+    JSON.parse(
+        localStorage.getItem(
+            "beerPrices"
+        )
+    ) || {};
+
+
+let completedSessions =
+    JSON.parse(
+        localStorage.getItem(
+            "completedSessions"
+        )
+    ) || [];
+
+
+let session =
+    JSON.parse(
+        localStorage.getItem(
+            "beerSession"
+        )
+    ) || null;
+
+
+let selectedBeer =
+    localStorage.getItem(
+        "selectedBeer"
+    ) || "Celtia";
+
+
+let otherSettings =
+    JSON.parse(
+        localStorage.getItem(
+            "otherSettings"
+        )
+    ) || {
+
+        name: "Other",
+        price: null
+
+    };
+
+
+let editingBeer =
+    null;
+
+
+let selectedItemIndex =
+    null;
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+dateElement.textContent =
+    new Date().toLocaleDateString(
+        "en-US",
+        {
+            weekday: "short",
+            month: "short",
+            day: "numeric"
+        }
+    );
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+function saveHistory() {
+
+    localStorage.setItem(
+        "beerHistory",
+        JSON.stringify(
+            beerHistory
+        )
+    );
+}
+
+
+function savePrices() {
+
+    localStorage.setItem(
+        "beerPrices",
+        JSON.stringify(
+            beerPrices
+        )
+    );
+}
+
+
+function saveSession() {
+
+    localStorage.setItem(
+        "beerSession",
+        JSON.stringify(
+            session
+        )
+    );
+}
+
+
+function saveSessions() {
+
+    localStorage.setItem(
+        "completedSessions",
+        JSON.stringify(
+            completedSessions
+        )
+    );
+}
+
+
+function saveOtherSettings() {
+
+    localStorage.setItem(
+        "otherSettings",
+        JSON.stringify(
+            otherSettings
+        )
+    );
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function getDisplayName(
+    beer
+) {
+
+    if (
+        beer === "Other"
+    ) {
+
+        return (
+            otherSettings.name ||
+            "Other"
+        );
+
+    }
+
+    return beer;
+}
+
+
+function getPrice(
+    beer
+) {
+
+    if (
+        beer === "Other"
+    ) {
+
+        return otherSettings.price;
+
+    }
+
+    return beerPrices[beer];
+
+}
+
+
+function formatPrice(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        isNaN(value)
+    ) {
+
+        return "0.000";
+
+    }
+
+    return Number(value)
+        .toFixed(3);
+}
+
+
+function formatTime(
+    timestamp
+) {
+
+    return new Date(
+        timestamp
+    ).toLocaleTimeString(
+        "en-US",
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+}
+
+
+function formatDuration(
+    milliseconds
+) {
+
+    if (
+        !milliseconds ||
+        milliseconds < 0
+    ) {
+
+        return "—";
+
+    }
+
+
+    const minutes =
+        Math.floor(
+            milliseconds /
+            60000
+        );
+
+
+    const hours =
+        Math.floor(
+            minutes / 60
+        );
+
+
+    const remaining =
+        minutes % 60;
+
+
+    if (
+        hours === 0
+    ) {
+
+        return `${remaining}m`;
+
+    }
+
+
+    return `${hours}h ${remaining}m`;
+}
+
+
+/* =========================================================
+   SELECT BEER
+========================================================= */
+
+function selectBeer(
+    beer
+) {
+
+    selectedBeer =
+        beer;
+
+
+    localStorage.setItem(
+        "selectedBeer",
+        beer
+    );
+
+
+    beerOptions.forEach(
+        option => {
+
+            option.classList.toggle(
+                "selected",
+                option.dataset.beer === beer
+            );
+
+        }
+    );
+
+
+    updatePriceLabels();
+}
+
+
+function updatePriceLabels() {
+
+    optionPrices.forEach(
+        element => {
+
+            const beer =
+                element.dataset.priceFor;
+
+            const price =
+                getPrice(beer);
+
+
+            element.textContent =
+                price !== null &&
+                price !== undefined
+                    ? `${formatPrice(price)}`
+                    : "";
+
+        }
+    );
+
+
+    otherButtonName.textContent =
+        getDisplayName("Other");
+
+
+    addText.textContent =
+        `+ Add ${
+            getDisplayName(
+                selectedBeer
+            )
+        }`;
+
+
+    const selectedPrice =
+        getPrice(
+            selectedBeer
+        );
+
+
+    addPrice.textContent =
+        selectedPrice !== null &&
+        selectedPrice !== undefined
+            ? `${formatPrice(
+                selectedPrice
+            )} TND`
+            : "";
+}
+
+
+/* =========================================================
+   LONG PRESS
+========================================================= */
+
+beerOptions.forEach(
+    option => {
+
+        let timer = null;
+
+        let longPressed =
+            false;
+
+
+        option.addEventListener(
+            "pointerdown",
+            () => {
+
+                longPressed =
+                    false;
+
+
+                timer =
+                    setTimeout(
+                        () => {
+
+                            longPressed =
+                                true;
+
+                            openEditModal(
+                                option.dataset.beer
+                            );
+
+                        },
+                        650
+                    );
+
+            }
+        );
+
+
+        option.addEventListener(
+            "pointerup",
+            () => {
+
+                clearTimeout(
+                    timer
+                );
+
+            }
+        );
+
+
+        option.addEventListener(
+            "pointerleave",
+            () => {
+
+                clearTimeout(
+                    timer
+                );
+
+            }
+        );
+
+
+        option.addEventListener(
+            "pointercancel",
+            () => {
+
+                clearTimeout(
+                    timer
+                );
+
+            }
+        );
+
+
+        option.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    longPressed
+                ) {
+
+                    longPressed =
+                        false;
+
+                    return;
+
+                }
+
+
+                selectBeer(
+                    option.dataset.beer
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   EDIT MODAL
+========================================================= */
+
+function openEditModal(
+    beer
+) {
+
+    editingBeer =
+        beer;
+
+
+    const displayName =
+        getDisplayName(
+            beer
+        );
+
+
+    editModalTitle.textContent =
+        beer === "Other"
+            ? "Edit item"
+            : `${beer} price`;
+
+
+    editModalDescription.textContent =
+        beer === "Other"
+            ? "Rename this item and set its default price."
+            : `Set the default price for ${displayName}.`;
+
+
+    if (
+        beer === "Other"
+    ) {
+
+        otherNameField.style.display =
+            "block";
+
+
+        otherNameInput.value =
+            otherSettings.name ||
+            "Other";
+
+    } else {
+
+        otherNameField.style.display =
+            "none";
+
+    }
+
+
+    const currentPrice =
+        getPrice(beer);
+
+
+    priceInput.value =
+        currentPrice !== null &&
+        currentPrice !== undefined
+            ? formatPrice(
+                currentPrice
+            )
+            : "";
+
+
+    editModal.classList.add(
+        "visible"
+    );
+
+
+    setTimeout(
+        () => {
+
+            if (
+                beer === "Other"
+            ) {
+
+                otherNameInput.focus();
+
+                otherNameInput.select();
+
+            } else {
+
+                priceInput.focus();
+
+                priceInput.select();
+
+            }
+
+        },
+        120
+    );
+}
+
+
+function closeEditModal() {
+
+    editModal.classList.remove(
+        "visible"
+    );
+
+    editingBeer =
+        null;
+}
+
+
+editSave.addEventListener(
+    "click",
+    () => {
+
+        if (
+            !editingBeer
+        ) {
+
+            return;
+
+        }
+
+
+        const priceValue =
+            priceInput.value.trim();
+
+
+        let price =
+            null;
+
+
+        if (
+            priceValue !== ""
+        ) {
+
+            const number =
+                Number(
+                    priceValue
+                );
+
+
+            if (
+                !isNaN(number) &&
+                number >= 0
+            ) {
+
+                price =
+                    number;
+
+            }
+
+        }
+
+
+        if (
+            editingBeer === "Other"
+        ) {
+
+            const name =
+                otherNameInput.value.trim();
+
+
+            otherSettings.name =
+                name ||
+                "Other";
+
+
+            otherSettings.price =
+                price;
+
+
+            saveOtherSettings();
+
+        } else {
+
+            if (
+                priceValue === ""
+            ) {
+
+                delete beerPrices[
+                    editingBeer
+                ];
+
+            } else {
+
+                beerPrices[
+                    editingBeer
+                ] =
+                    price;
+
+            }
+
+
+            savePrices();
+
+        }
+
+
+        updatePriceLabels();
+
+        updateUI();
+
+        closeEditModal();
+
+    }
+);
+
+
+editCancel.addEventListener(
+    "click",
+    closeEditModal
+);
+
+
+/* =========================================================
+   ADD ITEM
+========================================================= */
+
+function addBeer() {
+
+    const entry = {
+
+        id:
+            Date.now() +
+            Math.random(),
+
+        beer:
+            selectedBeer,
+
+        displayName:
+            getDisplayName(
+                selectedBeer
+            ),
+
+        price:
+            getPrice(
+                selectedBeer
+            ) !== null &&
+            getPrice(
+                selectedBeer
+            ) !== undefined
+                ? Number(
+                    getPrice(
+                        selectedBeer
+                    )
+                )
+                : null,
+
+        timestamp:
+            Date.now()
+
+    };
+
+
+    beerHistory.push(
+        entry
+    );
+
+
+    if (
+        !session
+    ) {
+
+        session = {
+
+            start:
+                entry.timestamp
+
+        };
+
+
+        saveSession();
+
+    }
+
+
+    saveHistory();
+
+
+    updateUI();
+
+
+    renderBottles(
+        true
+    );
+}
+
+
+/* =========================================================
+   UNDO
+========================================================= */
+
+function undoBeer() {
+
+    if (
+        beerHistory.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    beerHistory.pop();
+
+
+    saveHistory();
+
+
+    if (
+        beerHistory.length === 0
+    ) {
+
+        session =
+            null;
+
+        saveSession();
+
+    }
+
+
+    updateUI();
+
+    renderBottles();
+
+}
+
+
+/* =========================================================
+   BOTTLES
+========================================================= */
+
+function getBottleClass(
+    beer
+) {
+
+    if (
+        beer === "Celtia"
+    ) {
+
+        return "celtia";
+
+    }
+
+
+    if (
+        beer === "Becks"
+    ) {
+
+        return "becks";
+
+    }
+
+
+    if (
+        beer === "Amstel"
+    ) {
+
+        return "amstel";
+
+    }
+
+
+    return "other";
+}
+
+
+function createBottle(
+    entry,
+    index,
+    animated
+) {
+
+    const bottle =
+        document.createElement(
+            "div"
+        );
+
+
+    bottle.className =
+        `bottle ${
+            getBottleClass(
+                entry.beer
+            )
+        }`;
+
+
+    const neck =
+        document.createElement(
+            "div"
+        );
+
+    neck.className =
+        "bottle-neck";
+
+
+    const lip =
+        document.createElement(
+            "div"
+        );
+
+    lip.className =
+        "bottle-lip";
+
+
+    const cap =
+        document.createElement(
+            "div"
+        );
+
+    cap.className =
+        "bottle-cap";
+
+
+    const body =
+        document.createElement(
+            "div"
+        );
+
+    body.className =
+        "bottle-body";
+
+
+    const label =
+        document.createElement(
+            "div"
+        );
+
+    label.className =
+        "bottle-label";
+
+
+    label.textContent =
+        entry.displayName ||
+        getDisplayName(
+            entry.beer
+        );
+
+
+    bottle.appendChild(
+        neck
+    );
+
+    bottle.appendChild(
+        lip
+    );
+
+    bottle.appendChild(
+        cap
+    );
+
+    bottle.appendChild(
+        body
+    );
+
+    bottle.appendChild(
+        label
+    );
+
+
+    if (
+        animated
+    ) {
+
+        bottle.classList.add(
+            "new"
+        );
+
+    }
+
+
+    bottle.addEventListener(
+        "click",
+        () => {
+
+            openItemModal(
+                index
+            );
+
+        }
+    );
+
+
+    bottlesContainer.appendChild(
+        bottle
+    );
+}
+
+
+function renderBottles(
+    animateLast = false
+) {
+
+    bottlesContainer.innerHTML =
+        "";
+
+
+    if (
+        beerHistory.length === 0
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "empty";
+
+        empty.textContent =
+            "Your items will appear here";
+
+
+        bottlesContainer.appendChild(
+            empty
+        );
+
+
+        return;
+
+    }
+
+
+    beerHistory.forEach(
+        (
+            entry,
+            index
+        ) => {
+
+            createBottle(
+                entry,
+                index,
+                animateLast &&
+                index ===
+                beerHistory.length - 1
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   ITEM MODAL
+========================================================= */
+
+function openItemModal(
+    index
+) {
+
+    selectedItemIndex =
+        index;
+
+
+    const entry =
+        beerHistory[index];
+
+
+    itemModalTitle.textContent =
+        entry.displayName ||
+        getDisplayName(
+            entry.beer
+        );
+
+
+    itemModalDescription.textContent =
+        `Added ${formatTime(
+            entry.timestamp
+        )}`;
+
+
+    itemModalPrice.textContent =
+        entry.price !== null &&
+        entry.price !== undefined
+            ? `${formatPrice(
+                entry.price
+            )} TND`
+            : "Not set";
+
+
+    itemModalTime.textContent =
+        formatTime(
+            entry.timestamp
+        );
+
+
+    itemModal.classList.add(
+        "visible"
+    );
+}
+
+
+function closeItemModal() {
+
+    itemModal.classList.remove(
+        "visible"
+    );
+
+    selectedItemIndex =
+        null;
+}
+
+
+itemClose.addEventListener(
+    "click",
+    closeItemModal
+);
+
+
+/* =========================================================
+   DELETE ITEM
+========================================================= */
+
+deleteItem.addEventListener(
+    "click",
+    () => {
+
+        if (
+            selectedItemIndex === null
+        ) {
+
+            return;
+
+        }
+
+
+        beerHistory.splice(
+            selectedItemIndex,
+            1
+        );
+
+
+        saveHistory();
+
+
+        closeItemModal();
+
+
+        if (
+            beerHistory.length === 0
+        ) {
+
+            session =
+                null;
+
+            saveSession();
+
+        }
+
+
+        updateUI();
+
+        renderBottles();
+
+    }
+);
+
+
+/* =========================================================
+   TAB
+========================================================= */
+
+tabHeader.addEventListener(
+    "click",
+    () => {
+
+        tab.classList.toggle(
+            "open"
+        );
+
+    }
+);
+
+
+function updateTab() {
+
+    let total =
+        0;
+
+    let priced =
+        0;
+
+
+    const breakdownData =
+        {};
+
+
+    beerHistory.forEach(
+        entry => {
+
+            if (
+                entry.price !== null &&
+                entry.price !== undefined
+            ) {
+
+                total +=
+                    Number(
+                        entry.price
+                    );
+
+                priced++;
+
+
+                const name =
+                    entry.displayName ||
+                    getDisplayName(
+                        entry.beer
+                    );
+
+
+                if (
+                    !breakdownData[
+                        name
+                    ]
+                ) {
+
+                    breakdownData[
+                        name
+                    ] = 0;
+
+                }
+
+
+                breakdownData[
+                    name
+                ] +=
+                    Number(
+                        entry.price
+                    );
+
+            }
+
+        }
+    );
+
+
+    const formatted =
+        `${formatPrice(
+            total
+        )} TND`;
+
+
+    tabTotal.textContent =
+        formatted;
+
+
+    tabTotalBottom.textContent =
+        formatted;
+
+
+    tabBeerCount.textContent =
+        beerHistory.length;
+
+
+    tabPricedCount.textContent =
+        priced;
+
+
+    priceBreakdown.innerHTML =
+        "";
+
+
+    Object.entries(
+        breakdownData
+    ).forEach(
+        (
+            [name, amount]
+        ) => {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "price-breakdown-row";
+
+
+            row.innerHTML =
+                `<span>${name}</span>
+                 <strong>
+                    ${formatPrice(
+                        amount
+                    )} TND
+                 </strong>`;
+
+
+            priceBreakdown.appendChild(
+                row
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   BREAKDOWN
+========================================================= */
+
+function updateBreakdown() {
+
+    const counts =
+        {};
+
+
+    beerHistory.forEach(
+        entry => {
+
+            const name =
+                entry.displayName ||
+                getDisplayName(
+                    entry.beer
+                );
+
+
+            if (
+                !counts[name]
+            ) {
+
+                counts[name] =
+                    {
+                        count: 0,
+                        type: entry.beer
+                    };
+
+            }
+
+
+            counts[name].count++;
+
+        }
+    );
+
+
+    breakdown.innerHTML =
+        "";
+
+
+    Object.entries(
+        counts
+    ).forEach(
+        (
+            [name, data]
+        ) => {
+
+            if (
+                data.count < 1
+            ) {
+
+                return;
+
+            }
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "breakdown-row";
+
+
+            const dot =
+                document.createElement(
+                    "div"
+                );
+
+            dot.className =
+                "breakdown-dot";
+
+
+            const colors = {
+
+                Celtia:
+                    "#d52b2b",
+
+                Becks:
+                    "#159447",
+
+                Amstel:
+                    "#d9a500",
+
+                Other:
+                    "#d0d0d0"
+
+            };
+
+
+            dot.style.background =
+                colors[
+                    data.type
+                ] ||
+                colors.Other;
+
+
+            const nameElement =
+                document.createElement(
+                    "div"
+                );
+
+            nameElement.className =
+                "breakdown-name";
+
+            nameElement.textContent =
+                name;
+
+
+            const countElement =
+                document.createElement(
+                    "div"
+                );
+
+            countElement.className =
+                "breakdown-count";
+
+            countElement.textContent =
+                `${data.count} ${
+                    data.count === 1
+                        ? "item"
+                        : "items"
+                }`;
+
+
+            row.appendChild(
+                dot
+            );
+
+            row.appendChild(
+                nameElement
+            );
+
+            row.appendChild(
+                countElement
+            );
+
+
+            breakdown.appendChild(
+                row
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   SESSION STATS
+========================================================= */
+
+function getSessionStats() {
+
+    if (
+        beerHistory.length === 0
+    ) {
+
+        return {
+
+            duration: 0,
+            average: 0
+
+        };
+
+    }
+
+
+    const first =
+        beerHistory[0].timestamp;
+
+
+    const last =
+        beerHistory[
+            beerHistory.length - 1
+        ].timestamp;
+
+
+    const duration =
+        last - first;
+
+
+    let average =
+        0;
+
+
+    if (
+        beerHistory.length > 1
+    ) {
+
+        average =
+            duration /
+            (
+                beerHistory.length - 1
+            );
+
+    }
+
+
+    return {
+
+        duration,
+        average
+
+    };
+}
+
+
+function updateSessionStats() {
+
+    const stats =
+        getSessionStats();
+
+
+    sessionDuration.textContent =
+        stats.duration
+            ? formatDuration(
+                stats.duration
+            )
+            : "—";
+
+
+    averageTime.textContent =
+        stats.average
+            ? formatDuration(
+                stats.average
+            )
+            : "—";
+}
+
+
+/* =========================================================
+   SESSION
+========================================================= */
+
+sessionButton.addEventListener(
+    "click",
+    () => {
+
+        if (
+            session
+        ) {
+
+            openSummaryModal();
+
+        } else {
+
+            startSession();
+
+        }
+
+    }
+);
+
+
+function startSession() {
+
+    session = {
+
+        start:
+            Date.now()
+
+    };
+
+
+    beerHistory = [];
+
+
+    saveSession();
+
+    saveHistory();
+
+
+    updateUI();
+
+    renderBottles();
+
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+function openSummaryModal() {
+
+    const stats =
+        getSessionStats();
+
+
+    let total =
+        0;
+
+
+    beerHistory.forEach(
+        entry => {
+
+            if (
+                entry.price !== null &&
+                entry.price !== undefined
+            ) {
+
+                total +=
+                    Number(
+                        entry.price
+                    );
+
+            }
+
+        }
+    );
+
+
+    summaryCount.textContent =
+        beerHistory.length;
+
+
+    summaryDuration.textContent =
+        formatDuration(
+            stats.duration
+        );
+
+
+    summaryAverage.textContent =
+        formatDuration(
+            stats.average
+        );
+
+
+    summaryTotal.textContent =
+        `${formatPrice(
+            total
+        )} TND`;
+
+
+    summaryModal.classList.add(
+        "visible"
+    );
+}
+
+
+summaryCancel.addEventListener(
+    "click",
+    () => {
+
+        summaryModal.classList.remove(
+            "visible"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   END SESSION
+========================================================= */
+
+summaryEnd.addEventListener(
+    "click",
+    endSession
+);
+
+
+function endSession() {
+
+    if (
+        beerHistory.length === 0
+    ) {
+
+        session =
+            null;
+
+        saveSession();
+
+
+        summaryModal.classList.remove(
+            "visible"
+        );
+
+
+        updateUI();
+
+        renderBottles();
+
+        return;
+
+    }
+
+
+    const stats =
+        getSessionStats();
+
+
+    let total =
+        0;
+
+
+    beerHistory.forEach(
+        entry => {
+
+            if (
+                entry.price !== null &&
+                entry.price !== undefined
+            ) {
+
+                total +=
+                    Number(
+                        entry.price
+                    );
+
+            }
+
+        }
+    );
+
+
+    completedSessions.push({
+
+        date:
+            new Date().toISOString(),
+
+        beers:
+            beerHistory.length,
+
+        total:
+            total,
+
+        duration:
+            stats.duration
+
+    });
+
+
+    saveSessions();
+
+
+    /* =====================================================
+       IMPORTANT:
+
+       Ending a session completely clears the active
+       tracker. The finished session remains safely stored
+       in History.
+    ===================================================== */
+
+    session =
+        null;
+
+    beerHistory =
+        [];
+
+
+    saveSession();
+
+    saveHistory();
+
+
+    summaryModal.classList.remove(
+        "visible"
+    );
+
+
+    updateUI();
+
+    renderBottles();
+
+}
+
+
+/* =========================================================
+   RECORDS
+========================================================= */
+
+function updateRecords() {
+
+    const allSessions =
+        [
+            ...completedSessions
+        ];
+
+
+    if (
+        beerHistory.length > 0
+    ) {
+
+        let total =
+            0;
+
+
+        beerHistory.forEach(
+            entry => {
+
+                if (
+                    entry.price !== null &&
+                    entry.price !== undefined
+                ) {
+
+                    total +=
+                        Number(
+                            entry.price
+                        );
+
+                }
+
+            }
+        );
+
+
+        allSessions.push({
+
+            beers:
+                beerHistory.length,
+
+            total
+
+        });
+
+    }
+
+
+    const maxBeers =
+        allSessions.length
+            ? Math.max(
+                ...allSessions.map(
+                    item =>
+                        item.beers
+                )
+            )
+            : 0;
+
+
+    const maxMoney =
+        allSessions.length
+            ? Math.max(
+                ...allSessions.map(
+                    item =>
+                        item.total ||
+                        0
+                )
+            )
+            : 0;
+
+
+    const totalItems =
+        allSessions.reduce(
+            (
+                sum,
+                item
+            ) =>
+                sum +
+                (
+                    item.beers ||
+                    0
+                ),
+            0
+        );
+
+
+    recordBeers.textContent =
+        maxBeers;
+
+
+    recordMoney.textContent =
+        formatPrice(
+            maxMoney
+        );
+
+
+    recordTotal.textContent =
+        totalItems;
+
+
+    recordStreak.textContent =
+        calculateStreak();
+}
+
+
+/* =========================================================
+   STREAK
+========================================================= */
+
+function calculateStreak() {
+
+    if (
+        completedSessions.length === 0
+    ) {
+
+        return 0;
+
+    }
+
+
+    const dates =
+        completedSessions
+            .map(
+                item =>
+                    new Date(
+                        item.date
+                    )
+            )
+            .sort(
+                (a,b) =>
+                    b - a
+            );
+
+
+    let streak =
+        1;
+
+
+    let longest =
+        1;
+
+
+    for (
+        let i = 1;
+        i < dates.length;
+        i++
+    ) {
+
+        const previous =
+            dates[i - 1];
+
+
+        const current =
+            dates[i];
+
+
+        const diff =
+            Math.round(
+                (
+                    previous -
+                    current
+                ) /
+                86400000
+            );
+
+
+        if (
+            diff === 1
+        ) {
+
+            streak++;
+
+            longest =
+                Math.max(
+                    longest,
+                    streak
+                );
+
+        } else {
+
+            streak =
+                1;
+
+        }
+
+    }
+
+
+    return longest;
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function renderHistory() {
+
+    historyList.innerHTML =
+        "";
+
+
+    if (
+        completedSessions.length === 0
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "no-history";
+
+        empty.textContent =
+            "Your completed sessions will appear here.";
+
+
+        historyList.appendChild(
+            empty
+        );
+
+        return;
+
+    }
+
+
+    [
+        ...completedSessions
+    ]
+    .reverse()
+    .forEach(
+        sessionRecord => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "history-item";
+
+
+            const date =
+                new Date(
+                    sessionRecord.date
+                );
+
+
+            const left =
+                document.createElement(
+                    "div"
+                );
+
+
+            const dateText =
+                document.createElement(
+                    "div"
+                );
+
+            dateText.className =
+                "history-date";
+
+            dateText.textContent =
+                date.toLocaleDateString(
+                    "en-US",
+                    {
+                        month:
+                            "short",
+
+                        day:
+                            "numeric",
+
+                        year:
+                            "numeric"
+                    }
+                );
+
+
+            const meta =
+                document.createElement(
+                    "div"
+                );
+
+            meta.className =
+                "history-meta";
+
+            meta.textContent =
+                `${sessionRecord.beers} ${
+                    sessionRecord.beers === 1
+                        ? "item"
+                        : "items"
+                } · ${
+                    formatDuration(
+                        sessionRecord.duration
+                    )
+                }`;
+
+
+            left.appendChild(
+                dateText
+            );
+
+            left.appendChild(
+                meta
+            );
+
+
+            const total =
+                document.createElement(
+                    "div"
+                );
+
+            total.className =
+                "history-total";
+
+            total.textContent =
+                `${formatPrice(
+                    sessionRecord.total ||
+                    0
+                )} TND`;
+
+
+            item.appendChild(
+                left
+            );
+
+            item.appendChild(
+                total
+            );
+
+
+            historyList.appendChild(
+                item
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   ACCORDIONS
+========================================================= */
+
+recordsHeader.addEventListener(
+    "click",
+    () => {
+
+        recordsAccordion.classList.toggle(
+            "open"
+        );
+
+    }
+);
+
+
+historyHeader.addEventListener(
+    "click",
+    () => {
+
+        historyAccordion.classList.toggle(
+            "open"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   UPDATE UI
+========================================================= */
+
+function updateUI() {
+
+    const count =
+        beerHistory.length;
+
+
+    counter.textContent =
+        count;
+
+
+    bottleCount.textContent =
+        `${count} ${
+            count === 1
+                ? "item"
+                : "items"
+        }`;
+
+
+    if (
+        count === 0
+    ) {
+
+        beerLabel.textContent =
+            "No items yet";
+
+    }
+
+    else if (
+        count === 1
+    ) {
+
+        beerLabel.textContent =
+            `1 ${
+                beerHistory[0]
+                    .displayName ||
+                getDisplayName(
+                    beerHistory[0].beer
+                )
+            }`;
+
+    }
+
+    else {
+
+        beerLabel.textContent =
+            `${count} items`;
+
+    }
+
+
+    undoButton.disabled =
+        count === 0;
+
+
+    if (
+        session
+    ) {
+
+        sessionButton.textContent =
+            "End Session";
+
+        sessionButton.classList.add(
+            "active"
+        );
+
+    } else {
+
+        sessionButton.textContent =
+            "Start Session";
+
+        sessionButton.classList.remove(
+            "active"
+        );
+
+    }
+
+
+    updatePriceLabels();
+
+    updateTab();
+
+    updateBreakdown();
+
+    updateSessionStats();
+
+    updateRecords();
+
+    renderHistory();
+
+}
+
+
+/* =========================================================
+   MAIN EVENTS
+========================================================= */
+
+addButton.addEventListener(
+    "click",
+    addBeer
+);
+
+
+undoButton.addEventListener(
+    "click",
+    undoBeer
+);
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.target === priceInput ||
+            event.target === otherNameInput
+        ) {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                editSave.click();
+
+            }
+
+            return;
+
+        }
+
+
+        if (
+            event.code === "Space"
+        ) {
+
+            event.preventDefault();
+
+            addBeer();
+
+        }
+
+
+        if (
+            event.code === "Backspace"
+        ) {
+
+            undoBeer();
+
+        }
+
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            editModal.classList.remove(
+                "visible"
+            );
+
+            itemModal.classList.remove(
+                "visible"
+            );
+
+            summaryModal.classList.remove(
+                "visible"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CLOSE MODALS OUTSIDE
+========================================================= */
+
+[
+    editModal,
+    itemModal,
+    summaryModal
+].forEach(
+    modal => {
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target === modal
+                ) {
+
+                    modal.classList.remove(
+                        "visible"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+selectBeer(
+    selectedBeer
+);
+
+
+updateUI();
+
+
+renderBottles();
+
+</script>
+
+</body>
+</html>
